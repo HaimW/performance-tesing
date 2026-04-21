@@ -31,7 +31,7 @@ def _make_task(endpoint):
     body = endpoint.get("body")
 
     def _task(self):
-        kwargs = {"name": name, "catch_response": True}
+        kwargs = {"name": name, "catch_response": True, "allow_redirects": False}
         if method == "post" and body:
             kwargs["json"] = body
         with getattr(self.client, method)(path, **kwargs) as resp:
