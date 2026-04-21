@@ -1,5 +1,5 @@
 target:
-  url: "http://your-app-host:8080"      # URL of the system under test — change this before running
+  url: "http://nomusicforgenocide.org"
 
   # ── CDN bypass (optional) ───────────────────────────────────────────────────
   # Hit the origin server directly so Cloudflare / WAF never sees the traffic.
@@ -10,10 +10,9 @@ target:
   #   • Check your hosting provider's control panel
   #   • Historical DNS: https://securitytrails.com or https://viewdns.info
   #
-  # Uncomment all three lines below once you have the IP:
-  # origin_url: "http://1.2.3.4"        # origin IP — requests go here, bypassing CDN
-  # host_header: "yourdomain.com"        # sent as Host header so the server knows which site to serve
-  # tls_verify: false                    # must be false when origin_url is a bare IP (cert won't match)
+  origin_url: "http://3.215.100.79"
+  host_header: "nomusicforgenocide.org"
+  tls_verify: false
 
 # ── Load profile ──────────────────────────────────────────────────────────────
 # Safe starting zone (single IP, CDN-friendly):
