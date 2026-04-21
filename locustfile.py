@@ -1,6 +1,7 @@
 import os
 import logging
-import warnings
+import socket
+import urllib.parse
 import urllib3
 import yaml
 import gevent
@@ -19,6 +20,22 @@ _kpi = _cfg["kpi"]
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
 _log = logging.getLogger("locust.kpi")
+
+# DNS override: redirect the target domain to the origin IP so TCP bypasses the
+# CDN while SNI still carries the real domain name (TLS cert validates normally).
+_origin_ip = _target.get("origin_ip")
+if _origin_ip:
+    _target_host = urllib.parse.urlparse(_target["url"]).hostname
+    _orig_create_connection = urllib3.util.connection.create_connection
+
+    def _patched_create_connection(address, *args, **kwargs):
+        host, port = address
+        if host == _target_host:
+            host = _origin_ip
+        return _orig_create_connection((host, port), *args, **kwargs)
+
+    urllib3.util.connection.create_connection = _patched_create_connection
+    _log.info("DNS override active: %s → %s", _target_host, _origin_ip)
 
 
 def _make_task(endpoint):
@@ -49,16 +66,9 @@ for _ep in _scenarios["endpoints"]:
 
 
 class WebsiteUser(HttpUser):
-    # Use origin_url when set so requests bypass the CDN entirely
-    host = _target.get("origin_url") or _target["url"]
+    host = _target["url"]
     wait_time = between(_scenarios["think_time_min"], _scenarios["think_time_max"])
     tasks = _task_list
-
-    def on_start(self):
-        if _target.get("host_header"):
-            self.client.headers.update({"Host": _target["host_header"]})
-        if not _target.get("tls_verify", True):
-            self.client.verify = False
 
 
 def _periodic_reporter(environment):

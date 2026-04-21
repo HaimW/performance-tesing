@@ -1,18 +1,6 @@
 target:
-  url: "http://nomusicforgenocide.org"
-
-  # ── CDN bypass (optional) ───────────────────────────────────────────────────
-  # Hit the origin server directly so Cloudflare / WAF never sees the traffic.
-  #
-  # How to find your origin IP:
-  #   • Cloudflare dashboard → DNS tab (look for the proxied A record)
-  #   • dig +short yourdomain.com (if not proxied yet)
-  #   • Check your hosting provider's control panel
-  #   • Historical DNS: https://securitytrails.com or https://viewdns.info
-  #
-  origin_url: "https://3.215.100.79"
-  host_header: "nomusicforgenocide.org"
-  tls_verify: false
+  url: "https://nomusicforgenocide.org"
+  origin_ip: "3.215.100.79"   # TCP goes here (bypasses CDN); domain name still used for SNI + cert
 
 # ── Load profile ──────────────────────────────────────────────────────────────
 # Safe starting zone (single IP, CDN-friendly):
