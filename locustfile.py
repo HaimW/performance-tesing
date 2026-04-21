@@ -45,9 +45,16 @@ for _ep in _scenarios["endpoints"]:
 
 
 class WebsiteUser(HttpUser):
-    host = _target["url"]
+    # Use origin_url when set so requests bypass the CDN entirely
+    host = _target.get("origin_url") or _target["url"]
     wait_time = between(_scenarios["think_time_min"], _scenarios["think_time_max"])
     tasks = _task_list
+
+    def on_start(self):
+        if _target.get("host_header"):
+            self.client.headers.update({"Host": _target["host_header"]})
+        if not _target.get("tls_verify", True):
+            self.client.verify = False
 
 
 def _periodic_reporter(environment):
