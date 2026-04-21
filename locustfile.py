@@ -53,6 +53,7 @@ def _make_task(endpoint):
             kwargs["json"] = body
         with getattr(self.client, method)(path, **kwargs) as resp:
             if resp.status_code not in expected:
+                _log.warning("FAIL %s → HTTP %d", name, resp.status_code)
                 resp.failure(f"{name} got {resp.status_code}")
 
     _task.__name__ = name.replace(" ", "_").replace("/", "_")
