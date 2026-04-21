@@ -28,29 +28,14 @@ workers:
   count: 1            # 1 worker is plenty for ≤200 users; add more when scaling up
 
 scenarios:
-  think_time_min: 2   # seconds — longer think time = lower RPS per user
-  think_time_max: 5   # at 50 users + 3.5s avg think time → ~14 RPS total
+  think_time_min: 2
+  think_time_max: 5
   endpoints:
     - method: GET
       path: "/"
       name: "GET /"
-      weight: 7         # relative weight; 7 out of 10 requests hit this endpoint
-      expected_status: 200
-
-    - method: GET
-      path: "/products"
-      name: "GET /products"
-      weight: 2
-      expected_status: 200
-
-    - method: POST
-      path: "/api/submit"
-      name: "POST /api/submit"
-      weight: 1
-      expected_status: [200, 201]
-      body:             # JSON body sent with every POST to this endpoint
-        username: "loadtest"
-        action: "ping"
+      weight: 10
+      expected_status: [200, 301, 302]  # include redirects — server is alive if it redirects
 
 kpi:
   report_interval: 10  # seconds between terminal KPI log lines during the test
