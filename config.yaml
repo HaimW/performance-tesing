@@ -1,0 +1,41 @@
+target:
+  url: "http://your-app-host:8080"      # URL of the system under test — change this before running
+
+load:
+  users: 100000       # total concurrent users to simulate
+  spawn_rate: 1000    # users added per second during ramp-up (100K reached in ~100s)
+  run_time: "5m"      # test duration — accepts: 30s, 5m, 1h30m
+
+workers:
+  count: 10           # number of Docker worker containers (each handles ~10K users)
+
+scenarios:
+  think_time_min: 1   # seconds — minimum wait between tasks per simulated user
+  think_time_max: 3   # seconds — maximum wait between tasks per simulated user
+  endpoints:
+    - method: GET
+      path: "/"
+      name: "GET /"
+      weight: 7         # relative weight; 7 out of 10 requests hit this endpoint
+      expected_status: 200
+
+    - method: GET
+      path: "/products"
+      name: "GET /products"
+      weight: 2
+      expected_status: 200
+
+    - method: POST
+      path: "/api/submit"
+      name: "POST /api/submit"
+      weight: 1
+      expected_status: [200, 201]
+      body:             # JSON body sent with every POST to this endpoint
+        username: "loadtest"
+        action: "ping"
+
+kpi:
+  report_interval: 10  # seconds between terminal KPI log lines during the test
+
+output:
+  csv_prefix: "results" # prefix for output files: results_stats.csv, results_history.csv, etc.
