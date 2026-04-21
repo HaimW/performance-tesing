@@ -10,7 +10,7 @@ target:
   #   • Check your hosting provider's control panel
   #   • Historical DNS: https://securitytrails.com or https://viewdns.info
   #
-  origin_url: "http://3.215.100.79"
+  origin_url: "https://3.215.100.79"
   host_header: "nomusicforgenocide.org"
   tls_verify: false
 

@@ -1,9 +1,13 @@
 import os
 import logging
+import warnings
+import urllib3
 import yaml
 import gevent
 from locust import HttpUser, between, events
 from locust.runners import MasterRunner
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 _cfg_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.yaml")
 with open(_cfg_path) as _f:
