@@ -1,17 +1,22 @@
 target:
   url: "http://your-app-host:8080"      # URL of the system under test — change this before running
 
+# ── Load profile ──────────────────────────────────────────────────────────────
+# Safe starting zone (single IP, CDN-friendly):
+#   users ≤ 50, spawn_rate ≤ 5  →  ~10-25 RPS  — well below Cloudflare/WAF limits
+#   users ≤ 200, spawn_rate ≤ 20 →  ~50-100 RPS — borderline; monitor for 429s
+#   users > 500                  →  test origin directly or whitelist your IP first
 load:
-  users: 100000       # total concurrent users to simulate
-  spawn_rate: 1000    # users added per second during ramp-up (100K reached in ~100s)
-  run_time: "5m"      # test duration — accepts: 30s, 5m, 1h30m
+  users: 50           # concurrent users (safe start; increase gradually)
+  spawn_rate: 5       # users added per second — 50 users reached in 10s
+  run_time: "2m"      # keep short while validating the target isn't blocking you
 
 workers:
-  count: 10           # number of Docker worker containers (each handles ~10K users)
+  count: 1            # 1 worker is plenty for ≤200 users; add more when scaling up
 
 scenarios:
-  think_time_min: 1   # seconds — minimum wait between tasks per simulated user
-  think_time_max: 3   # seconds — maximum wait between tasks per simulated user
+  think_time_min: 2   # seconds — longer think time = lower RPS per user
+  think_time_max: 5   # at 50 users + 3.5s avg think time → ~14 RPS total
   endpoints:
     - method: GET
       path: "/"
